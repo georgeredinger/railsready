@@ -30,11 +30,6 @@ control_c()
 # trap keyboard interrupt (control-c)
 trap control_c SIGINT
 
-echo -e "\n\n"
-echo "#################################"
-echo "########## Rails Ready ##########"
-echo "#################################"
-
 distro="ubuntu"
 
 #now check if user is root
@@ -45,15 +40,7 @@ fi
 
 echo -e "\n\n"
 echo "!!! This script will update your system! Run on a fresh install only !!!"
-echo "run tail -f $log_file in a new terminal to watch the install"
 
-echo -e "\n"
-echo "What this script gets you:"
-echo " * An updated system"
-echo " * Ruby $ruby_version_string"
-echo " * Imagemagick"
-echo " * libs needed to run Rails (sqlite, mysql, etc)"
-echo " * Bundler, Passenger, and Rails gems"
 echo " * Git"
 
 echo -e "\nThis script is always changing."
@@ -72,10 +59,34 @@ echo -e "\n=> Ensuring there is a .bashrc and .bash_profile..."
 touch $HOME/.bashrc && touch $HOME/.bash_profile
 echo "==> done..."
 
-echo -e "\n=> Downloading and running recipe for $distro...\n"
-#Download the distro specific recipe and run it, passing along all the variables as args
-wget --no-check-certificate -O $railsready_path/src/$distro.sh https://github.com/georgeredinger/railsready/raw/master/recipes/$distro.sh && cd $railsready_path/src && bash $distro.sh $ruby_version $ruby_version_string $ruby_source_url $ruby_source_tar_name $ruby_source_dir_name $whichRuby $railsready_path $log_file
-echo -e "\n==> done running $distro specific commands..."
+pm="apt-get"
+
+echo -e "\nUsing $pm for package installation\n"
+
+# Update the system before going any further
+echo -e "\n=> Updating system (this may take awhile)..."
+sudo $pm update >> $log_file 2>&1 \
+ && sudo $pm -y upgrade >> $log_file 2>&1
+echo "==> done..."
+
+# Install build tools
+echo -e "\n=> Installing build tools..."
+sudo $pm -y install \
+    wget curl build-essential \
+    bison openssl zlib1g \
+    libxslt1.1 libssl-dev libxslt1-dev \
+    libxml2 libffi-dev libyaml-dev \
+    libxslt-dev autoconf libc6-dev \
+    libreadline6-dev zlib1g-dev libcurl4-openssl-dev >> $log_file 2>&1
+echo "==> done..."
+
+echo -e "\n=> Installing libs needed for sqlite and mysql..."
+sudo $pm -y install  libmysqlclient16-dev libmysqlclient16 >> $log_file 2>&1
+echo "==> done..."
+
+echo -e "\n=> Installing git..."
+sudo $pm -y install git-core >> $log_file 2>&1
+echo "==> done..."
 
 #now that all the distro specific packages are installed lets get Ruby
   # Install Ruby
