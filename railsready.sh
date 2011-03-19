@@ -1,13 +1,6 @@
 #!/bin/bash
 #
-# Rails Ready
-#
-# Author: Josh Frye <joshfng@gmail.com>
-# Licence: MIT
-#
-# Contributions from: Wayne E. Seguin <wayneeseguin@gmail.com>
-# Contributions from: Ryan McGeary <ryan@mcgeary.org>
-#
+
 shopt -s nocaseglob
 set -e
 
@@ -38,14 +31,6 @@ if [ $script_runner == "root" ] ; then
   exit 1
 fi
 
-echo -e "\n\n"
-echo "!!! This script will update your system! Run on a fresh install only !!!"
-
-echo " * Git"
-
-echo -e "\nThis script is always changing."
-echo "Make sure you got it from https://github.com/joshfng/railsready"
-
 # Check if the user has sudo privileges.
 sudo -v >/dev/null 2>&1 || { echo $script_runner has no sudo privileges ; exit 1; }
 #install ruby from source
@@ -57,7 +42,6 @@ echo "==> done..."
 
 echo -e "\n=> Ensuring there is a .bashrc and .bash_profile..."
 touch $HOME/.bashrc && touch $HOME/.bash_profile
-echo "==> done..."
 
 pm="apt-get"
 
@@ -67,7 +51,6 @@ echo -e "\nUsing $pm for package installation\n"
 echo -e "\n=> Updating system (this may take awhile)..."
 sudo $pm update >> $log_file 2>&1 \
  && sudo $pm -y upgrade >> $log_file 2>&1
-echo "==> done..."
 
 # Install build tools
 echo -e "\n=> Installing build tools..."
@@ -118,5 +101,4 @@ echo -e "#################################\n"
 
 echo -e "\n !!! logout and back in to access Ruby or run source ~/.bash_profile !!!\n"
 
-echo -e "\n Thanks!\n-Josh\n"
 
